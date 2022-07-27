@@ -46,10 +46,9 @@ uint8_t data_buffer[10];
 
 int main(void)
 {	
-	timer_init();
+	//timer_init();
 	spi_init();
 	uart_init();
-	
 	
 	PORTB_R &= ~(0x01);
 	spi_trans(0xF4 & 0x7F);//Mode and sampling register ,Normal Mode ,16x sampling
@@ -60,9 +59,9 @@ int main(void)
 	
     while (1) 
     {
-		//get_temp();
-		//print_values();
-		//delay1();
+		get_temp();
+		print_values();
+		delay1();
 		
     }
 }
@@ -77,9 +76,9 @@ void timer_init(){
 	TIMSK1_R = 0x02;    //enabling output compare A interrupt
 }
 
-ISR (TIMER1_COMPA_vect){
+//ISR (TIMER1_COMPA_vect){
 	//get_temp();
-}
+//}
 
 void spi_init(){
 	DDRB_R = 0x07; //Pin0(SS) and Pin2(MOSI) are output
