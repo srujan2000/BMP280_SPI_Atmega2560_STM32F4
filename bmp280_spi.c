@@ -105,9 +105,9 @@ uint8_t spi_trans(uint8_t data){
 
 void get_temp(){
 	PORTB_R &= ~(0x01);
-	spi_trans(0xFA|0x80);
-	for(int i=0;i<3;i++){
-		data_buffer[i] = spi_trans(0x00);
+	spi_trans(0xFA|0x80); // to read from 0xFA address 
+	for(int i=0;i<3;i++){ 
+		data_buffer[i] = spi_trans(0x00); //reading 3 bytes
 	}
 	PORTB_R |= 0x01;
 }
