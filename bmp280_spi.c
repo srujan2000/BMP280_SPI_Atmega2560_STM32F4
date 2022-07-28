@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #define SPC_R *((volatile uint8_t*)0x4C) //control register
 #define SPS_R *((volatile uint8_t*)0x4D) //status  register
