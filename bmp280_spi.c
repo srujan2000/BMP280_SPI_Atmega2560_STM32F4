@@ -7,8 +7,7 @@
 
 #define F_CPU 16000000UL
 
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
 #include <avr/io.h>
 
 #define SPC_R *((volatile uint8_t*)0x4C) //control register
@@ -40,13 +39,12 @@ uint8_t spi_trans(uint8_t);
 void get_temp(void);
 long temp_calc(long);
 void print_values(void);
-void delay1(void);
 
 uint8_t data_buffer[10];
 
 int main(void)
 {	
-	//timer_init();
+	timer_init();
 	spi_init();
 	uart_init();
 	
@@ -59,9 +57,6 @@ int main(void)
 	
     while (1) 
     {
-		get_temp();
-		print_values();
-		delay1();
 		
     }
 }
@@ -76,9 +71,9 @@ void timer_init(){
 	TIMSK1_R = 0x02;    //enabling output compare A interrupt
 }
 
-//ISR (TIMER1_COMPA_vect){
-	//get_temp();
-//}
+ISR (TIMER1_COMPA_vect){
+	get_temp();
+}
 
 void spi_init(){
 	DDRB_R = 0x07; //Pin0(SS) and Pin2(MOSI) are output
@@ -153,9 +148,5 @@ void print_values(){
 	
 }
 
-void delay1(){
-	volatile long i;
-	for(i=0;i<500000;i++);
-}
 
 
