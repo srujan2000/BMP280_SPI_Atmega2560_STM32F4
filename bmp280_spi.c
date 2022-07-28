@@ -53,9 +53,6 @@ int main(void)
 	
     while (1) 
     {
-		//get_temp();
-		//print_values();
-		//delay1();
 		
     }
 }
