@@ -1,15 +1,8 @@
-/*
- * bmp280_spi.c
- *
- * Created: 26-07-2022 17:52:52
- * Author : SRUJAN
- */ 
-
 #define F_CPU 16000000UL
 
 #include <stdio.h>
-#include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/io.h>
 
 #define SPC_R *((volatile uint8_t*)0x4C) //control register
 #define SPS_R *((volatile uint8_t*)0x4D) //status  register
@@ -19,11 +12,11 @@
 #define PORTB_R *((volatile uint8_t*)0x25)  //data out of port b 
 
 
-#define TCCR1A_R *((volatile uint8_t*)0x25)  //timer_1 control register A
+#define TCCR1A_R *((volatile uint8_t*)0x80)  //timer_1 control register A
 #define TCCR1B_R *((volatile uint8_t*)0x81)  //timer_1 control register B
 #define TCNT1_R  *((volatile uint16_t*)0x84) //timer_1  counter
 #define OCR1A_R  *((volatile uint16_t*)0x88) //timer_1 output compare register A
-#define TIMSK1_R  *((volatile uint8_t*)0x6F)//timer_1 interrupt mask register
+#define TIMSK1_R  *((volatile uint8_t*)0x6F) //timer_1 interrupt mask register
 
 
 #define UCSR0_A *((volatile uint8_t*)0xC0) // UART control and status register A
@@ -45,9 +38,9 @@ uint8_t data_buffer[10];
 
 int main(void)
 {	
-	timer_init();
 	spi_init();
 	uart_init();
+	
 	
 	PORTB_R &= ~(0x01);
 	spi_trans(0xF4 & 0x7F);//Mode and sampling register ,Normal Mode ,16x sampling
@@ -56,24 +49,33 @@ int main(void)
 	spi_trans(0x8C);
 	PORTB_R |= (0x01);
 	
+	timer_init();
+	
     while (1) 
     {
+		//get_temp();
+		//print_values();
+		//delay1();
 		
     }
 }
 
 
-
 void timer_init(){
+	
 	TCCR1A_R = 0x00;    //normal mode
 	TCCR1B_R = 0x0C;    //prescaler = 256 and set on compare match
 	TCNT1_R  = 0;       // counter value to zero
 	OCR1A_R  = 62500-1; // output compare value
 	TIMSK1_R = 0x02;    //enabling output compare A interrupt
+	
+	sei(); //enable global interrupt
+	
 }
 
 ISR (TIMER1_COMPA_vect){
-	get_temp();
+		get_temp();
+		print_values();
 }
 
 void spi_init(){
@@ -101,9 +103,9 @@ uint8_t spi_trans(uint8_t data){
 
 void get_temp(){
 	PORTB_R &= ~(0x01);
-	spi_trans(0xFA|0x80); // to read from 0xFA address 
-	for(int i=0;i<3;i++){ 
-		data_buffer[i] = spi_trans(0x00); //reading 3 bytes
+	spi_trans(0xFA|0x80);
+	for(int i=0;i<3;i++){
+		data_buffer[i] = spi_trans(0x00);
 	}
 	PORTB_R |= 0x01;
 }
@@ -148,6 +150,5 @@ void print_values(){
 	uart_tx('\n');
 	
 }
-
 
 
